@@ -1,0 +1,19 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>pdf-rs viewer icon check</title>
+<style>
+  body { margin: 0; background: #6b7280; font: 12px system-ui, sans-serif; }
+  .wrap { display: flex; gap: 16px; padding: 16px; align-items: flex-start; }
+  .sq { width: 512px; height: 512px; background: #ffffff; }
+  /* the launcher: rust plate + our layer, clipped to a circle of r = 238/512 */
+  .mask { width: 512px; height: 512px; border-radius: 50%; overflow: hidden;
+          background: #e43717; }
+  .small { width: 108px; height: 108px; border-radius: 50%; overflow: hidden;
+           background: #e43717; }
+  img { display: block; }
+</style>
+<div class="wrap">
+  <div id="a" class="sq"><img src="icon.svg" width="512" height="512"></div>
+  <div id="b" class="mask"><img src="icon.svg" width="512" height="512"></div>
+  <div id="c" class="small"><img src="icon.svg" width="108" height="108"></div>
+</div>

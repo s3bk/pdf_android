@@ -1,0 +1,28 @@
+[package]
+name = "pdfcmp"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "pdfcmp"
+path = "src/main.rs"
+
+[dependencies]
+# Same source the viewer uses, so a reference raster and the page on screen are
+# the same engine: what is under test here is the GPU path, the tiling, the
+# swipe and the blit, not the parser.
+pdf = { git = "ssh://git@github.com/s3bk/pdf.git", branch = "master", default-features = false, features = ["cache", "dump"] }
+pdf_render = { path = "/home/hematite/task-clones/pdf_render/render", default-features = false, features = ["vello_cpu"] }
+pathfinder_geometry = { git = "https://github.com/servo/pathfinder" }
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+[patch."ssh://git@github.com/s3bk/pdf.git"]
+pdf = { path = "/home/hematite/.cargo/git/checkouts/pdf-dfb861c1999ec428/e7bda78/pdf" }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = "symbols"

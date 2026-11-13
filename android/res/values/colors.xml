@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Black spur gear, white bore, black "PDF", on white.  The adaptive
+         background layer is white, and the same white is the window
+         background, so a cold start flashes the icon's own colour. -->
+    <color name="icon_rim">#ffffff</color>
+    <!-- Kept for older launchers and the Settings page. -->
+    <color name="icon_bg">#ffffff</color>
+</resources>

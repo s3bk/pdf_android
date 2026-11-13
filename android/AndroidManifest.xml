@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NativeActivity only: the `lib_name` meta-data is what makes the framework
+     load `libmain.so` and call the exported `android_main`. Exactly one Java
+     class is in the APK - `org.pdf_rs.viewer.Field`, which owns the framework
+     text field the address bar and the search panel borrow - so `hasCode` is
+     true; everything else is native. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.pdf_rs.viewer">
+
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="36" />
+
+    <uses-feature android:name="android.hardware.vulkan.version" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <!-- Reading a document straight off a URL: byte ranges over HTTP(S). -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:label="PDF"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:hasCode="true"
+        android:hardwareAccelerated="true"
+        android:extractNativeLibs="true">
+
+        <activity
+            android:name="org.pdf_rs.viewer.Viewer"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|density|uiMode"
+            android:windowSoftInputMode="adjustNothing"
+            android:theme="@style/Viewer">
+
+            <meta-data android:name="android.app.lib_name" android:value="main" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- "Open with" for a PDF the system hands us: a document-provider
+                 URI (content://) or a plain file path. BROWSABLE is what makes
+                 the chooser offer the app from a browser too. -->
+            <intent-filter android:priority="10">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" android:mimeType="application/pdf" />
+                <data android:scheme="file" android:mimeType="application/pdf" />
+            </intent-filter>
+
+            <!-- A link that names a PDF. Only URLs whose path ends in .pdf: an
+                 http filter without a path would claim every web page. -->
+            <intent-filter android:priority="10">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="http"
+                    android:host="*"
+                    android:pathPattern=".*.pdf.*"
+                    android:mimeType="application/pdf" />
+                <data
+                    android:scheme="https"
+                    android:host="*"
+                    android:pathPattern=".*.pdf.*"
+                    android:mimeType="application/pdf" />
+            </intent-filter>
+
+            <!-- ...and the same two without a type, which is what a browser
+                 actually sends when it hands a .pdf link over. -->
+            <intent-filter android:priority="10">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="http"
+                    android:host="*"
+                    android:pathPattern=".*.pdf.*" />
+                <data
+                    android:scheme="https"
+                    android:host="*"
+                    android:pathPattern=".*.pdf.*" />
+            </intent-filter>
+
+            <!-- Share sheet: "Send to PDF". -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/pdf" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

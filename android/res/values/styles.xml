@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- A window that stops below a display cutout is letterboxed by the
+         system, and the letterbox comes with a full-screen input sink window on
+         top of ours: every touch goes to it and the app never sees one. Laying
+         the window over the cutout keeps it the size of the display, which is
+         also what a page viewer wants — the camera hole sits over the top of
+         the page, not over a black band. -->
+    <style name="Viewer" parent="@android:style/Theme.NoTitleBar.Fullscreen">
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <!-- The window's own background is what shows for the frame or two
+             between the activity coming up and the first frame reaching the
+             surface, and it is the flash the owner sees on a cold start. It is
+             the icon's rust, so the app arrives in its own colour instead of
+             black. The page covers it from the first frame on. -->
+        <item name="android:windowBackground">@color/icon_rim</item>
+        <item name="android:colorBackground">@color/icon_rim</item>
+    </style>
+</resources>

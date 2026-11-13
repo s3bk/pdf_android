@@ -1,0 +1,12 @@
+# build output
+target/
+
+# scratch: test PDFs, one-off screenshots from the emulator, page dumps
+tmp/
+shots/
+
+# python droppings
+__pycache__/
+*.pyc
+
+*.apk

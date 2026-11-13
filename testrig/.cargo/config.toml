@@ -1,0 +1,8 @@
+# The rig is built for the emulator, not for the host: the reference rasters
+# have to be produced next to the thing under test, or every screenshot would
+# have to travel back over the wire.
+[build]
+target = "x86_64-linux-android"
+
+[target.x86_64-linux-android]
+linker = "/home/hematite/android-sdk/android-ndk-r29/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android26-clang"

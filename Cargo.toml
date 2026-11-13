@@ -1,0 +1,66 @@
+[package]
+name = "pdf_android"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# The `.so` has to be called `libmain.so` for NativeActivity: the manifest names
+# it with `android.app.lib_name`.
+[lib]
+name = "main"
+crate-type = ["cdylib"]
+
+[dependencies]
+# Same source as pdf_render itself uses: two `pdf` crates at once means two
+# incompatible sets of types (`Page`, `Resolve`, `Transform2F`).
+pdf = { git = "ssh://git@github.com/s3bk/pdf.git", branch = "master", default-features = false, features = ["cache", "dump"] }
+pdf_render = { path = "/home/hematite/task-clones/pdf_render/render", default-features = false, features = ["vello"] }
+# The same font parser `pdf` uses, at the same revision, so the UI can borrow
+# its glyph outlines instead of pulling in a second text stack.
+font = { git = "https://github.com/pdf-rs/font", rev = "032f427839837c6e1fac7333bd4039d3482d17a7" }
+vello = "=0.11.0"
+# TLS for reading a PDF straight off a URL: the NDK has no TLS stack, and there
+# is no Java in the APK to borrow `HttpsURLConnection` from.
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12", "logging"] }
+webpki-roots = "1"
+winit = { version = "0.30", default-features = false, features = ["android-native-activity", "rwh_06"] }
+log = "0.4"
+
+[target.'cfg(target_os = "android")'.dependencies]
+android_logger = "0.14"
+# Reading the intent the launcher handed us: `getIntent().getData()` and
+# `ContentResolver.openInputStream()` are Java, and there is no Java in the APK.
+jni = "0.21"
+
+# TEMPORARY: the two tolerance fixes below are in the `pdf` crate, which comes
+# from git and which cargo will not rebuild when a checkout is edited. Pointing
+# the patch at the checkout (same source the dependency names) makes cargo treat
+# it as a path and pick the edits up. Both belong upstream in s3bk/pdf:
+#   * encoding.rs: `Primitive::Null` for `/Encoding` is "no encoding", not a
+#     fatal error — arXiv's PDFs write `null` there and every page failed.
+#   * render/renderstate.rs: a `Do` naming an object that is missing or `Null`
+#     skips that op instead of failing the whole page.
+[patch."ssh://git@github.com/s3bk/pdf.git"]
+pdf = { path = "/home/hematite/.cargo/git/checkouts/pdf-dfb861c1999ec428/e7bda78/pdf" }
+
+# Sized for the APK, not for a benchmark: the .so is the whole download.
+#   * opt-level 3, NOT "z": "z" was tried and it cost the phone half its frame
+#     rate and seconds of startup — the PDF parser, the glyph cache and the
+#     scene builder are all CPU code. The symbol strip is where the megabytes
+#     actually were, so this costs little size and keeps the speed.
+#   * fat LTO + one codegen unit: cross-crate inlining, and generic code (vello,
+#     kurbo, rustls) is instantiated once instead of in every crate.
+#   * panic = abort: no landing pads, no backtrace machinery.
+#   * strip: symbols are ~6 MB of the 23 MB unstripped .so.
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = "symbols"
+# The phone build is the one that has to keep up with a finger: spell out the
+# three things `release` should already imply, so a later profile tweak for size
+# cannot quietly put a bounds check or a stack probe back into the hot loop.
+debug-assertions = false
+overflow-checks = false
+incremental = false
