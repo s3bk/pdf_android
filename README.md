@@ -58,12 +58,12 @@ Install on a device or emulator:
 
 ## Dependencies (pay attention to these)
 
-* `pdf` — `ssh://git@github.com/s3bk/pdf.git`, branch `master`. Not on crates.io
+* `pdf` — `https://github.com/s3bk/pdf.git`, branch `master`. Not on crates.io
   in this form: the viewer builds the fork. It is spelled exactly as
   `pdf_render` spells it, on purpose: two source entries for one crate is two
   `pdf` crates in the tree and two incompatible `Page` types. `Cargo.lock` holds
   the revision the release was built with (`e7bda78`).
-* `pdf_render` — `ssh://git@github.com/s3bk/pdf_render.git`, pinned to
+* `pdf_render` — `https://github.com/s3bk/pdf_render.git`, pinned to
   `075ea26` (branch `vello`). A path into a sibling checkout is no use to
   anyone who clones this repository, and a tag that only builds on one machine
   is not a release.
