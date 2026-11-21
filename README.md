@@ -59,14 +59,19 @@ Install on a device or emulator:
 ## Dependencies (pay attention to these)
 
 * `pdf` — `ssh://git@github.com/s3bk/pdf.git`, branch `master`. Not on crates.io
-  in this form: the app builds the fork.
-* `pdf_render` — a **local path**, `/home/hematite/task-clones/pdf_render/render`,
-  branch `vello` (pushed to `s3bk/pdf_render` as `vello`). Adjust the path in
-  `Cargo.toml` to build somewhere else.
-* `Cargo.toml` still carries a `[patch]` that repoints `pdf` at a cargo git
-  checkout; it is there so edits to the checkout are picked up, and the two
-  tolerance fixes its comment describes are **not** in `pdf` master (the
-  comment is stale — see the log page for what actually fails on a file).
+  in this form: the viewer builds the fork. It is spelled exactly as
+  `pdf_render` spells it, on purpose: two source entries for one crate is two
+  `pdf` crates in the tree and two incompatible `Page` types. `Cargo.lock` holds
+  the revision the release was built with (`e7bda78`).
+* `pdf_render` — `ssh://git@github.com/s3bk/pdf_render.git`, pinned to
+  `075ea26` (branch `vello`). A path into a sibling checkout is no use to
+  anyone who clones this repository, and a tag that only builds on one machine
+  is not a release.
+* Both are read over ssh, which is what `pdf_render`'s own manifest does. With a
+  GitHub key that just works; without one, the two URLs have to become
+  `https://` in both manifests.
+* `font` — `pdf-rs/font`, pinned by revision. The same parser `pdf` uses, so the
+  UI borrows glyph outlines rather than pulling in a second text stack.
 
 ## Signing
 
@@ -76,7 +81,19 @@ installs over the previous build if it is signed with the same certificate, and
 the last builds on the emulator used this one. It is not a secret and it is not
 what a published app would use.
 
+## Releases
+
+A tagged release carries the signed APK for each ABI:
+
+    v0.9.0   pdf-viewer-0.9.0-arm64-v8a.apk    phones
+             pdf-viewer-0.9.0-x86_64.apk       emulator, x86 tablets
+
+    adb install -r pdf-viewer-0.9.0-arm64-v8a.apk
+
+Every build is signed with `keys/dev.p12`, so a release installs over an older
+one instead of demanding an uninstall. `CHANGELOG.md` says what changed.
+
 ## Status
 
-0.9.0 (versionCode 19). Known issues live in the log page and in the
-`pdf`/`pdf_render` forks.
+0.9.0 (versionCode 19), tagged `v0.9.0`. Known issues live in the log page and
+in the `pdf` / `pdf_render` forks.

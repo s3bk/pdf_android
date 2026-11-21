@@ -1088,15 +1088,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "itertools"
-version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b4baf93f58d4425749ca49a51c50ebab072c5df6994d08fed93541c331481dc"
-dependencies = [
- "either",
-]
-
-[[package]]
 name = "itoa"
 version = "1.0.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1906,6 +1897,7 @@ dependencies = [
 [[package]]
 name = "pdf"
 version = "0.10.0"
+source = "git+ssh://git@github.com/s3bk/pdf.git?branch=master#e7bda786233f5025b7711dbf68e8f9f4e93449de"
 dependencies = [
  "aes",
  "bitflags 2.13.2",
@@ -1933,7 +1925,7 @@ dependencies = [
 
 [[package]]
 name = "pdf_android"
-version = "0.1.0"
+version = "0.9.0"
 dependencies = [
  "android_logger",
  "font",
@@ -1950,6 +1942,7 @@ dependencies = [
 [[package]]
 name = "pdf_derive"
 version = "0.3.0"
+source = "git+ssh://git@github.com/s3bk/pdf.git?branch=master#e7bda786233f5025b7711dbf68e8f9f4e93449de"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1968,6 +1961,7 @@ dependencies = [
 [[package]]
 name = "pdf_render"
 version = "0.2.0"
+source = "git+ssh://git@github.com/s3bk/pdf_render.git?rev=075ea2607cc029a23ee2965c90059002e1981755#075ea2607cc029a23ee2965c90059002e1981755"
 dependencies = [
  "custom_debug_derive",
  "flate2",
@@ -1976,7 +1970,7 @@ dependencies = [
  "image",
  "instant",
  "istring 0.4.7",
- "itertools 0.15.0",
+ "itertools 0.10.5",
  "log",
  "once_cell",
  "pathfinder_color",

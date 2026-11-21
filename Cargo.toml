@@ -1,6 +1,6 @@
 [package]
 name = "pdf_android"
-version = "0.1.0"
+version = "0.9.0"
 edition = "2021"
 publish = false
 
@@ -11,10 +11,13 @@ name = "main"
 crate-type = ["cdylib"]
 
 [dependencies]
-# Same source as pdf_render itself uses: two `pdf` crates at once means two
-# incompatible sets of types (`Page`, `Resolve`, `Transform2F`).
+# `pdf` is the fork this viewer needs, and it has to be spelled exactly as
+# pdf_render spells it: two source entries for one crate (a branch here, a rev
+# there) is two `pdf` crates in the tree and two incompatible sets of types
+# (`Page`, `Resolve`, `Transform2F`). The locked revision is in Cargo.lock, so
+# the tag still pins what it built with. Over ssh, as pdf_render's manifest is.
 pdf = { git = "ssh://git@github.com/s3bk/pdf.git", branch = "master", default-features = false, features = ["cache", "dump"] }
-pdf_render = { path = "/home/hematite/task-clones/pdf_render/render", default-features = false, features = ["vello"] }
+pdf_render = { git = "ssh://git@github.com/s3bk/pdf_render.git", rev = "075ea2607cc029a23ee2965c90059002e1981755", default-features = false, features = ["vello"] }
 # The same font parser `pdf` uses, at the same revision, so the UI can borrow
 # its glyph outlines instead of pulling in a second text stack.
 font = { git = "https://github.com/pdf-rs/font", rev = "032f427839837c6e1fac7333bd4039d3482d17a7" }
@@ -31,17 +34,6 @@ android_logger = "0.14"
 # Reading the intent the launcher handed us: `getIntent().getData()` and
 # `ContentResolver.openInputStream()` are Java, and there is no Java in the APK.
 jni = "0.21"
-
-# TEMPORARY: the two tolerance fixes below are in the `pdf` crate, which comes
-# from git and which cargo will not rebuild when a checkout is edited. Pointing
-# the patch at the checkout (same source the dependency names) makes cargo treat
-# it as a path and pick the edits up. Both belong upstream in s3bk/pdf:
-#   * encoding.rs: `Primitive::Null` for `/Encoding` is "no encoding", not a
-#     fatal error — arXiv's PDFs write `null` there and every page failed.
-#   * render/renderstate.rs: a `Do` naming an object that is missing or `Null`
-#     skips that op instead of failing the whole page.
-[patch."ssh://git@github.com/s3bk/pdf.git"]
-pdf = { path = "/home/hematite/.cargo/git/checkouts/pdf-dfb861c1999ec428/e7bda78/pdf" }
 
 # Sized for the APK, not for a benchmark: the .so is the whole download.
 #   * opt-level 3, NOT "z": "z" was tried and it cost the phone half its frame
